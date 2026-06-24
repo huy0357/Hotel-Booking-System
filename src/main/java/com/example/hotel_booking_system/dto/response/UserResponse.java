@@ -1,4 +1,13 @@
-package com.example.hotel_booking_system.dto.response;
+        package com.example.hotel_booking_system.dto.response;
 
-public class UserResponse {
-}
+        import lombok.Data;
+
+        @Data
+        public class  UserResponse {
+                private Long id;
+                private String fullName;
+                private String email;
+                private String phone;
+                private Boolean isActive;
+
+        }
