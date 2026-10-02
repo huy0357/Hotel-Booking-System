@@ -1,0 +1,43 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: hotel-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hotel_booking
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+      TZ: Asia/Ho_Chi_Minh
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+07:00
+    ports:
+      - "3306:3306"
+    volumes:
+      - hotel_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Tuỳ chọn: chạy migration bằng Flyway container (không cần chạy Spring Boot)
+  # docker compose --profile migrate up flyway
+  flyway:
+    image: flyway/flyway:10
+    profiles: ["migrate"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      FLYWAY_URL: jdbc:mysql://mysql:3306/hotel_booking?allowPublicKeyRetrieval=true&useSSL=false
+      FLYWAY_USER: dev
+      FLYWAY_PASSWORD: dev
+    command: -connectRetries=10 migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+
+volumes:
+  hotel_mysql_data:
