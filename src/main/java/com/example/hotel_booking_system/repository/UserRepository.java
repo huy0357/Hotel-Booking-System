@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
 
@@ -24,4 +26,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("keyword") String keyword,
             Pageable pageable
     );
+
+
+    boolean existsByEmail(String email);
+
+    Optional<User> findByEmail(String email);
 }
